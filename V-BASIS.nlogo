@@ -204,22 +204,23 @@ end
 ;;
 to Quarantine
   ask shelters [
-    set capacity (count people-here with [quarantined?])
-    let pctcap ((capacity / ShelterCapacity)* 100)
-    show (word "Shelter " self " at " pctcap "%")
-    ifelse capacity >= ShelterCapacity [
-      set color red
-      ;;What to do?
-      print (word "Shelter Capacity Exceeded. Operating at " ((capacity / ShelterCapacity)* 100) "%")
-    ][
+    if capacity < ShelterCapacity [
       let sickpop (count people with [status = G_SICK and not quarantined?])
       if sickpop > 0 [
         let mypop min list (ShelterCapacity - capacity) sickpop
         ask n-of mypop people with [status = G_SICK and not quarantined?] [
           move-to myself
-          set quarantined? true
+          set quarantined? True
         ]
       ]
+    ]
+
+    set capacity (count people-here with [quarantined?])
+    if capacity >= ShelterCapacity [
+      set color red
+      ;;What to do?
+      let pctcap ((capacity / ShelterCapacity)* 100)
+      print (word "Shelter Capacity Exceeded. Operating at " ((capacity / ShelterCapacity)* 100) "%")
     ]
   ]
 end
@@ -289,14 +290,16 @@ to Recover
   set color green
   set shape "Square"
   set recovered? True
+  set quarantined? False
 end
 
 to Succumb
   set status G_DEAD
-  set recovered? False
   set statchange ticks
   set color gray
   set shape "X"
+  set recovered? False
+  set quarantined? False
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -395,7 +398,7 @@ Prob_of_Infection
 Prob_of_Infection
 0
 100
-70.0
+55.0
 1
 1
 %
@@ -472,13 +475,13 @@ PENS
 SLIDER
 9
 445
-119
+127
 478
 SocialDistance
 SocialDistance
 0
 5
-1.0
+0.0
 0.1
 1
 NIL
@@ -568,13 +571,13 @@ Number
 SLIDER
 9
 405
-118
+129
 438
 NumShelters
 NumShelters
 0
 10
-0.0
+4.0
 1
 1
 NIL
@@ -603,15 +606,15 @@ Quarantine
 11
 
 SLIDER
-121
+135
 405
-247
+261
 438
 ShelterCapacity
 ShelterCapacity
 10
 1000
-200.0
+90.0
 10
 1
 NIL
@@ -698,9 +701,9 @@ Sick_Thresh
 Number
 
 SLIDER
-121
+135
 446
-246
+260
 479
 Vision
 Vision
@@ -728,6 +731,24 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+1353
+16
+1804
+288
+Hospital Capacity
+NIL
+NIL
+0.0
+1.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot (sum [capacity] of shelters)"
 
 @#$#@#$#@
 ## WHAT IS IT?
