@@ -240,7 +240,7 @@ to update
       ]
       status = G_SYMPTOM [
         ;; Symptomatic/sick... declining health
-        set health (health * 0.95)
+        set health (health * 0.98)
         if ((ticks - statchange) >  (random Sick)) [
           ifelse health < Sick_Thresh [
             set status G_SICK
@@ -254,10 +254,10 @@ to update
         ;; Seriously sick... rapidly declining health; seek medical
         ifelse quarantined? [
           ;;Admitted to a hospital
-          set health (health * 0.90)
+          set health (health * 0.98)
         ][
           ;;No Admittance
-          set health (health * (1.0 - Mortality * (1 / Sick)))
+          set health (health * ((1.0 - M_Thresh)  / Sick))
         ]
 
         ;;If health falls below a threshold, person succumbs
@@ -398,7 +398,7 @@ Prob_of_Infection
 Prob_of_Infection
 0
 100
-55.0
+60.0
 1
 1
 %
@@ -551,7 +551,7 @@ HealthIndex
 HealthIndex
 1
 100
-85.0
+90.0
 1
 1
 %
@@ -577,7 +577,7 @@ NumShelters
 NumShelters
 0
 10
-4.0
+0.0
 1
 1
 NIL
@@ -614,7 +614,7 @@ ShelterCapacity
 ShelterCapacity
 10
 1000
-90.0
+450.0
 10
 1
 NIL
